@@ -1,0 +1,18 @@
+# 実データ（スキーマは db/schema.sql で管理する）
+db/zaiko.db
+db/zaiko.db-wal
+db/zaiko.db-shm
+db/backup/
+
+# 解析ドキュメント（公開しない）
+docs/
+
+# 依存・テスト生成物
+node_modules/
+test-results/
+playwright-report/
+.phpunit.result.cache
+
+# OS・エディタ
+.DS_Store
+Thumbs.db

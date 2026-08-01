@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="bootstrap.php"
+         colors="true"
+         failOnWarning="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true">
+  <testsuites>
+    <testsuite name="unit">
+      <directory>unit</directory>
+    </testsuite>
+    <testsuite name="integration">
+      <directory>integration</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+    <env name="ZAIKO_DB_PATH" value="/tmp/zaiko_phpunit.db"/>
+    <env name="ZAIKO_DEBUG" value="1"/>
+  </php>
+</phpunit>

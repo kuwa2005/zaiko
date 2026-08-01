@@ -1,0 +1,165 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background: #f2f4f7;
+  color: #2b2f36;
+  line-height: 1.6;
+  padding-bottom: 40px;
+}
+
+.wrap { width: 100%; margin: 0 auto; padding: 0 16px; }
+
+/* ---- header ---- */
+.site-header {
+  background: #1f3a5f;
+  color: #fff;
+  padding: 10px 0;
+}
+.site-header .wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.brand a { color: #fff; font-size: 18px; font-weight: bold; text-decoration: none; }
+.site-nav { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.site-nav .nav-row { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.site-nav .nav-label { color: #8fb0d6; font-size: 12px; line-height: 1.9; margin-right: 2px; }
+.site-nav a { color: #cfe0f5; text-decoration: none; }
+.site-nav a:hover { color: #fff; text-decoration: underline; }
+.user-info { margin-left: auto; font-size: 13px; color: #cfe0f5; }
+.user-info strong { color: #fff; }
+
+main.wrap { padding-top: 24px; }
+
+/* ---- page ---- */
+.page-title { font-size: 22px; margin: 8px 0 16px; }
+
+/* ---- buttons ---- */
+.btn {
+  display: inline-block;
+  padding: 7px 16px;
+  border: 1px solid #8895a7;
+  border-radius: 4px;
+  background: #fff;
+  color: #2b2f36;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  vertical-align: middle;
+}
+.btn:hover { background: #f0f3f7; }
+.btn-primary { background: #1f3a5f; border-color: #1f3a5f; color: #fff; }
+.btn-primary:hover { background: #2a4d7d; color: #fff; }
+.btn-danger { background: #b23b3b; border-color: #b23b3b; color: #fff; }
+.btn-danger:hover { background: #cf4a4a; color: #fff; }
+.btn-sm { padding: 3px 10px; font-size: 12px; }
+
+/* ---- form ---- */
+.form-card {
+  background: #fff;
+  border: 1px solid #dbe1e8;
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px 16px;
+}
+.form-item label { display: block; font-size: 12px; color: #5b6470; margin-bottom: 2px; }
+.form-item input, .form-item select, .form-item textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #c3ccd8;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.form-actions { margin-top: 14px; }
+label.radio-line { font-size: 14px; margin-right: 14px; }
+label.radio-line input { width: auto; margin-right: 4px; }
+
+/* ---- table ---- */
+.table-scroll { margin-bottom: 20px; }
+table.grid {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 13px;
+  table-layout: auto;
+}
+table.grid th, table.grid td {
+  border: 1px solid #dbe1e8;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: middle;
+}
+table.grid th {
+  background: #eef2f7;
+  color: #2b2f36;
+  white-space: nowrap;
+}
+table.grid td.num, table.grid th.num { text-align: right; white-space: nowrap; }
+table.grid td.col-code { white-space: nowrap; }
+
+/* 内容列などのラジオボタンを縦並びにして幅を抑える */
+.radio-stack .radio-line { display: block; }
+.radio-stack .radio-line + .radio-line { margin-top: 2px; }
+table.grid tr:nth-child(even) { background: #f8fafc; }
+
+/* ---- badges ---- */
+.badge {
+  display: inline-block;
+  padding: 1px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.badge-未受付 { background: #ffe3b3; color: #7a4f00; }
+.badge-受付済 { background: #cfe0f5; color: #1f3a5f; }
+.badge-入庫済 { background: #cfe8cd; color: #1f5f1f; }
+.badge-分割済 { background: #e6d6f5; color: #4a2a7a; }
+
+/* ---- alert ---- */
+.alert {
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+.alert-info  { background: #e7f2fa; border: 1px solid #bcd9f0; color: #1f3a5f; }
+.alert-error { background: #fdeaea; border: 1px solid #f2c4c4; color: #8a1f1f; }
+
+/* ---- summary ---- */
+.summary-cards { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.summary-card {
+  background: #fff;
+  border: 1px solid #dbe1e8;
+  border-radius: 6px;
+  padding: 14px 18px;
+  min-width: 170px;
+}
+.summary-card .label { font-size: 12px; color: #5b6470; }
+.summary-card .value { font-size: 22px; font-weight: bold; margin-top: 2px; }
+
+.inline-form { display: inline; }
+.pager { margin: 10px 0; }
+.hint { font-size: 12px; color: #5b6470; }
+
+/* ---- 発注依頼ヘルパー ---- */
+.draft-help[hidden] { display: none; }
+.draft-help {
+  background: #f6f8fb;
+  border: 1px solid #dbe1e8;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  display: inline-block;
+}
+.draft-help table { border-collapse: collapse; }
+.draft-help th {
+  text-align: left;
+  font-size: 12px;
+  color: #5b6470;
+  padding: 2px 18px 2px 0;
+  white-space: nowrap;
+  font-weight: normal;
+}
+.draft-help td { font-size: 13px; padding: 2px 0; white-space: nowrap; }
