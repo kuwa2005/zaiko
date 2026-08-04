@@ -158,7 +158,7 @@ function restore_from_upload(array $tables, string $label): void
         foreach (preg_split('/;\s*\n/s', $sql) as $chunk) {
             $s = trim($chunk);
             if ($s === '' || str_starts_with($s, '--') || str_starts_with($s, 'SET ')) continue;
-            if (!preg_match('/^INSERT\s+INTO\s+`?(\w+)`?/i', $s, $m)) continue;
+            if (!preg_match('/^INSERT\s+INTO\s+`?(\w+)`?/iu', $s, $m)) continue;
             if (!in_array($m[1], $tables, true)) continue;
             $pdo->exec($s);
         }
