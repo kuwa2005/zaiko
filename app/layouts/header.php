@@ -14,7 +14,7 @@ $user  = current_担当者();
 <body>
 <header class="site-header">
   <div class="wrap">
-    <div class="brand"><a href="<?= url('dashboard') ?>"><?= h(APP_NAME) ?></a></div>
+    <div class="brand"><a href="<?= url('dashboard') ?>"><?= h(APP_NAME) ?>(DEMO)</a></div>
     <nav class="site-nav">
       <div class="nav-row">
         <a href="<?= url('dashboard') ?>">ダッシュボード</a>
