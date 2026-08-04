@@ -1,0 +1,88 @@
+Attribute VB_Name = "⑦入庫"
+Attribute VB_Base = "0{00020820-0000-0000-C000-000000000046}"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Attribute VB_TemplateDerived = False
+Attribute VB_Customizable = True
+Option Explicit
+
+'================================================================
+'=  コードがダブルクリックされた時
+'================================================================
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+
+'    w行 = Target.Row
+'    w列 = Target.Column
+'
+'    Call 画面停止有効
+'    Call 管理NO退避
+'    If (エラー = "Y") Then
+'        Exit Sub
+'    Else
+'        If (w行 > 2 And w列 = 15) Then
+'            '*----------*
+'            Call DB_OPEN
+'            Call テーブルを開く("T_在庫発注データ where 管理NO = '" & w管理NO & "'", "管理NO")
+'            Call 在庫発注データ情報退避
+'            Call テーブルを閉じる
+'            Call DB_CLOSE
+'            '*----------*
+'            Call 手配データ分割画面を開く
+'        End If
+'    End If
+'    Call 画面停止無効
+    
+    
+End Sub
+
+'================================================================
+'=  在庫発注データ情報退避
+'================================================================
+Sub 在庫発注データ情報退避()
+
+    If (r.EOF) Then
+        Exit Sub
+    End If
+    
+    With r
+        w注番 = ![注番]
+        wコード = ![コード]
+        w品名 = ![品名]
+        w数量 = ![数量]
+        w納期 = ![納期]
+        w型式 = ![型式]
+        w依頼者 = ![依頼者]
+        w依頼日 = ![依頼日]
+        w受付者 = ![受付者]
+        w受付日 = ![受付日]
+        w備考 = ![備考]
+    End With
+            
+End Sub
+
+'================================================================
+'=  手配データ分割画面を開く
+'================================================================
+Sub 手配データ分割画面を開く()
+
+    Range("A3").Select
+    手配データ分割画面.Show
+
+End Sub
+
+'================================================================
+'=  管理NO退避
+'================================================================
+Sub 管理NO退避()
+
+    エラー = "N"
+
+    If (Trim(Range("O" & w行)) = "") Then
+        エラー = "Y"
+    Else
+        w管理NO = 大文字変換(半角変換(Trim(Range("O" & w行))))
+    End If
+    
+End Sub

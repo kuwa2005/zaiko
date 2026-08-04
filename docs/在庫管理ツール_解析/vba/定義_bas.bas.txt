@@ -1,0 +1,50 @@
+Attribute VB_Name = "定義"
+
+'★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆
+'☆
+'★  変数
+'☆
+'★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆
+Public cn As Database
+Public sql As String
+Public r As Recordset
+Public w行 As Long
+Public w列 As Long
+Public w管理NO As String
+Public wコード As Variant
+Public w品名 As Variant
+Public w数量 As Double
+Public w最小発注数量 As Variant
+Public w単位 As Variant
+Public w単価  As Variant
+Public w残数量 As Double
+Public w安全在庫数 As Variant
+Public w標準納入日数  As Variant
+Public w取引先 As Variant
+Public w棚番 As Variant
+Public w備考 As Variant
+Public w納期 As Variant
+Public w型式 As Variant
+Public w依頼者 As Variant
+Public w依頼日 As Variant
+Public w受付者 As Variant
+Public w受付日 As Variant
+Public w注番 As Variant
+Public w分割数量 As String
+Public w分割納期 As String
+Public w分割数量合計 As Double
+Public w分割数量1 As Double
+Public w分割数量2 As Double
+Public w分割数量3 As Double
+Public 管理NO As String
+Public 最終行 As Long
+Public エラー As String
+Public 存在チェック As String
+Public 全件数 As Long
+
+'★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆
+'☆
+'★  定数
+'☆
+'★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆
+Public Const DB名 = "\data.accdb"

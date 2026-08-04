@@ -1,0 +1,88 @@
+Attribute VB_Name = "⑪在庫マスタ"
+Attribute VB_Base = "0{00020820-0000-0000-C000-000000000046}"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Attribute VB_TemplateDerived = False
+Attribute VB_Customizable = True
+Option Explicit
+
+'================================================================
+'=  コードがダブルクリックされた時
+'================================================================
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+
+    w行 = Target.Row
+    w列 = Target.Column
+    
+    Call 画面停止有効
+    Call コード退避
+    If (エラー = "Y") Then
+        Exit Sub
+    Else
+        If (w行 > 2 And w列 = 2) Then
+            '*----------*
+            Call DB_OPEN
+            Call テーブルを開く("T_在庫マスタ where コード = '" & wコード & "'", "コード")
+            Call 在庫マスタ情報退避
+            Call テーブルを閉じる
+            Call DB_CLOSE
+            '*----------*
+            Call 在庫マスタ変更画面を開く
+        End If
+    End If
+    Call 画面停止無効
+    
+    
+End Sub
+
+'================================================================
+'=  在庫マスタ情報退避
+'================================================================
+Sub 在庫マスタ情報退避()
+
+    If (r.EOF) Then
+        Exit Sub
+    End If
+    
+    With r
+        w品名 = ![品名]
+        w数量 = ![数量]
+        w単位 = ![単位]
+        w単価 = ![単価]
+        w残数量 = ![残数量]
+        w安全在庫数 = ![安全在庫数]
+        w最小発注数量 = ![最小発注数量]
+        w標準納入日数 = ![標準納入日数]
+        w棚番 = ![棚番]
+        w取引先 = ![取引先]
+        w備考 = ![備考]
+    End With
+            
+End Sub
+
+'================================================================
+'=  在庫マスタ変更画面を開く
+'================================================================
+Sub 在庫マスタ変更画面を開く()
+
+    Range("A3").Select
+    在庫マスタ変更画面.Show
+
+End Sub
+
+'================================================================
+'=  コード退避
+'================================================================
+Sub コード退避()
+
+    エラー = "N"
+
+    If (Trim(Range("B" & w行)) = "") Then
+        エラー = "Y"
+    Else
+        wコード = 大文字変換(半角変換(Trim(Range("B" & w行))))
+    End If
+    
+End Sub

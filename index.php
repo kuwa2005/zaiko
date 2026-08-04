@@ -31,6 +31,7 @@ $pages = [
     'customer_edit' => 'app/pages/customer_edit.php',
     'monthly'     => 'app/pages/monthly.php',
     'logs'        => 'app/pages/logs.php',
+    'admin'       => 'app/pages/admin.php',
 ];
 
 $page_file = $pages[$p] ?? null;

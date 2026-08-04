@@ -1,0 +1,106 @@
+Attribute VB_Name = "⑩入出庫状況確認"
+Attribute VB_Base = "0{00020820-0000-0000-C000-000000000046}"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Attribute VB_TemplateDerived = False
+Attribute VB_Customizable = True
+Option Explicit
+
+'================================================================
+'=  コードがダブルクリックされた時
+'================================================================
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+
+    w行 = Target.Row
+    w列 = Target.Column
+        
+    Call 画面停止有効
+    Call コード退避
+    If (エラー = "Y") Then
+        Exit Sub
+    Else
+        If (w行 > 3 And w列 = 2) Then
+            '*----------*
+            Call DB_OPEN
+            Call テーブルを開く("Q_発注状況確認データ where コード = '" & wコード & "'", "依頼日 desc")
+            Call シート表示("発注状況詳細確認", "A3")
+            Call フラグセット("発注状況詳細確認", "入出庫状況確認", "T1")
+            Call データエリア削除("A3", "AZ500000", "A3")
+            Call 発注状況詳細データセット
+            Call テーブルを閉じる
+            Call DB_CLOSE
+            '*----------*
+        End If
+    End If
+    Call 画面停止無効
+
+End Sub
+
+'================================================================
+'=  コード退避
+'================================================================
+Sub コード退避()
+
+    エラー = "N"
+
+    If (Trim(Range("B" & w行)) = "") Then
+        エラー = "Y"
+    Else
+        wコード = 大文字変換(半角変換(Trim(Range("B" & w行))))
+    End If
+    
+End Sub
+
+'================================================================
+'=  発注状況詳細データセット
+'================================================================
+Sub 発注状況詳細データセット()
+
+    Dim 二次元配列 As Variant
+    Dim w行 As Long
+            
+    エラー = "N"
+    If (r.EOF) Then
+        エラー = "Y"
+        Exit Sub
+    End If
+    
+    ReDim 二次元配列(全件数 - 1, 20)
+            
+    w行 = 0
+    With r
+        .MoveFirst
+        Do Until (.EOF)
+            二次元配列(w行, 0) = w行 + 1
+            二次元配列(w行, 1) = ![注番]
+            二次元配列(w行, 2) = ![区分]
+            二次元配列(w行, 3) = ![コード]
+            二次元配列(w行, 4) = ![品名]
+            二次元配列(w行, 5) = ![数量]
+            二次元配列(w行, 6) = ![基本数量]
+            二次元配列(w行, 7) = ![単位]
+            二次元配列(w行, 8) = ![単価]
+            二次元配列(w行, 9) = (![数量] / ![基本数量]) * ![単価]
+            二次元配列(w行, 10) = ![納期]
+            二次元配列(w行, 11) = ![型式]
+            二次元配列(w行, 12) = ![依頼者]
+            二次元配列(w行, 13) = ![依頼日]
+            二次元配列(w行, 14) = ![受付者]
+            二次元配列(w行, 15) = ![受付日]
+            二次元配列(w行, 16) = ![入庫者]
+            二次元配列(w行, 17) = ![入庫日]
+            二次元配列(w行, 18) = ![管理NO]
+            二次元配列(w行, 19) = ![備考]
+            w行 = w行 + 1
+            .MoveNext
+        Loop
+    End With
+    If (w行 <= 1) Then
+        Sheets("発注状況詳細確認").Range("A3:U3") = 二次元配列
+    Else
+        Sheets("発注状況詳細確認").Range("A3:U" & w行 + 2) = 二次元配列
+    End If
+
+End Sub

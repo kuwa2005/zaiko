@@ -1,0 +1,247 @@
+Attribute VB_Name = "手配データ分割画面"
+Attribute VB_Base = "0{527FFE15-F5B6-49BE-9804-23D21719E8A0}{65A699E2-9A2D-489D-9FC6-5F0862F49ABC}"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+Attribute VB_TemplateDerived = False
+Attribute VB_Customizable = False
+Option Explicit
+
+'****************************************************************
+'*  画面がアクティブになった場合
+'****************************************************************
+Private Sub UserForm_Activate()
+    
+    Dim w日 As Long
+    Dim 開始日 As Date
+    Dim 終了日 As Date
+    
+    '*----------*
+    管理NO = ""
+    注番 = ""
+    コード = ""
+    品名 = ""
+    数量 = ""
+    納期 = ""
+    型式 = ""
+    手配者 = ""
+    手配日 = ""
+    受付者 = ""
+    受付日 = ""
+    備考 = ""
+    分割数量1 = ""
+    分割数量2 = ""
+    分割数量3 = ""
+    分割納期1 = ""
+    分割納期2 = ""
+    分割納期3 = ""
+    '*----------*
+    管理NO = w管理NO
+    注番 = w注番
+    コード = wコード
+    品名 = w品名
+    数量 = w数量
+    納期 = w納期
+    型式 = w型式
+    手配者 = w依頼者
+    手配日 = w依頼日
+    受付者 = w受付者
+    受付日 = w受付日
+    備考 = w備考
+    開始日 = Now() - 300
+    終了日 = Now() + 300
+    For w日 = 開始日 To 終了日
+        分割納期1.AddItem Format(w日, "yyyy/mm/dd")
+        分割納期2.AddItem Format(w日, "yyyy/mm/dd")
+        分割納期3.AddItem Format(w日, "yyyy/mm/dd")
+    Next
+    分割納期1 = Format(Now, "yyyy/mm/dd")
+    分割納期2 = Format(Now, "yyyy/mm/dd")
+    分割納期3 = Format(Now, "yyyy/mm/dd")
+    '*----------*
+    分割数量1.SetFocus
+
+End Sub
+
+'****************************************************************
+'*  <実行>ボタン
+'****************************************************************
+Private Sub 実行_Click()
+    
+    Call 画面停止有効
+    Call 手配データ分割画面チェック
+    If (エラー = "Y") Then
+    Else
+        '*----------*
+        Call DB_OPEN
+        Call データ削除("T_在庫発注データ", "管理NO", 管理NO)
+        Call DB_CLOSE
+        '*----------*
+        Call DB_OPEN
+        Call テーブルを開く("T_在庫発注データ", "依頼日 desc")
+        Call 手配分割データ登録
+        Call テーブルを閉じる
+        Call DB_CLOSE
+        '*----------*
+        Call シート表示("入庫", "C3")
+        Call データエリア削除("A3", "AZ500000", "A3")
+        '*----------*
+        Call DB_OPEN
+        Call テーブルを開く("T_在庫発注データ where isnull(注番) = false ", "管理NO desc")
+        If (エラー = "Y") Then
+        Else
+'            Call データセット(0, 15, "C", 3, "R", "C3")
+            Call 最終行チェック(1, 18, 2)
+            Call プルダウンセット("B3", "B1000", "保管,取消,削除", "A3")
+        End If
+        Call テーブルを閉じる
+        Call DB_CLOSE
+        '*----------*
+        Call メッセージ(7)
+        Call 手配データ分割画面を閉じる
+    End If
+    Call 画面停止無効
+    
+End Sub
+
+'****************************************************************
+'*  <閉じる>ボタン
+'****************************************************************
+Private Sub 閉じる_Click()
+    
+    Call 手配データ分割画面を閉じる
+
+End Sub
+
+'================================================================
+'=  手配分割データ登録
+'================================================================
+Sub 手配分割データ登録()
+    
+    Dim w回数 As Long
+    Dim 登録フラグ As String
+    
+    For w回数 = 1 To 3
+        
+        '*----------*
+        登録フラグ = "N"
+        Select Case w回数
+            Case 1
+                If (Trim(分割数量1) = "") Then
+                Else
+                    w分割数量 = 分割数量1
+                    w分割納期 = 分割納期1
+                    登録フラグ = "Y"
+                End If
+            Case 2
+                If (Trim(分割数量2) = "") Then
+                Else
+                    w分割数量 = 分割数量2
+                    w分割納期 = 分割納期2
+                    登録フラグ = "Y"
+                End If
+            Case 3
+                If (Trim(分割数量3) = "") Then
+                Else
+                    w分割数量 = 分割数量3
+                    w分割納期 = 分割納期3
+                    登録フラグ = "Y"
+                End If
+        End Select
+        '*----------*
+        
+        If (登録フラグ = "Y") Then
+            With r
+                .AddNew
+                ![管理NO] = 管理NO & "-" & w回数
+                ![注番] = 未入力の場合Null変換(注番)
+                ![コード] = 未入力の場合Null変換(コード)
+                ![品名] = 未入力の場合Null変換(品名)
+                ![数量] = CDbl(w分割数量)
+                ![納期] = Format(w分割納期, "yyyy/mm/dd")
+                ![型式] = 未入力の場合Null変換(型式)
+                ![依頼者] = 未入力の場合Null変換(手配者)
+                ![依頼日] = 未入力の場合Null変換(手配日)
+                ![受付者] = 未入力の場合Null変換(受付者)
+                ![受付日] = 未入力の場合Null変換(受付日)
+                ![備考] = 未入力の場合Null変換(備考)
+                .Update
+            End With
+        End If
+    Next
+
+End Sub
+
+'================================================================
+'=  手配データ分割画面チェック
+'================================================================
+Sub 手配データ分割画面チェック()
+    
+    エラー = "N"
+    
+    '*----------*
+    If (Trim(分割数量1) = "" And Trim(分割数量2) = "" And Trim(分割数量3) = "") Then
+        MsgBox "分割数量が未入力です。", 16, "メッセージ"
+        分割数量1.SetFocus
+        エラー = "Y"
+        Exit Sub
+    End If
+    '*----------*
+    If (Trim(分割数量1) = "") Then
+        w分割数量1 = 0
+    Else
+        w分割数量1 = CDbl(分割数量1)
+        If (Trim(分割納期1) = "") Then
+            MsgBox "分割①納期が未入力です。", 16, "メッセージ"
+            分割納期1.SetFocus
+            エラー = "Y"
+            Exit Sub
+        End If
+    End If
+    '*----------*
+    If (Trim(分割数量2) = "") Then
+        w分割数量2 = 0
+    Else
+        w分割数量2 = CDbl(分割数量2)
+        If (Trim(分割納期2) = "") Then
+            MsgBox "分割②納期が未入力です。", 16, "メッセージ"
+            分割納期2.SetFocus
+            エラー = "Y"
+            Exit Sub
+        End If
+    End If
+    '*----------*
+    If (Trim(分割数量3) = "") Then
+        w分割数量3 = 0
+    Else
+        w分割数量3 = CDbl(分割数量3)
+        If (Trim(分割納期3) = "") Then
+            MsgBox "分割③納期が未入力です。", 16, "メッセージ"
+            分割納期3.SetFocus
+            エラー = "Y"
+            Exit Sub
+        End If
+    End If
+    '*----------*
+    w分割数量合計 = 0
+    w分割数量合計 = w分割数量1 + w分割数量2 + w分割数量3
+    If (CDbl(数量) = w分割数量合計) Then
+    Else
+        MsgBox "手配数量 ≠ 分割数量1 + 分割数量2 + 分割数量3です。", 16, "メッセージ"
+        分割数量1.SetFocus
+        エラー = "Y"
+        Exit Sub
+    End If
+
+End Sub
+
+'================================================================
+'=  手配データ分割画面を閉じる
+'================================================================
+Sub 手配データ分割画面を閉じる()
+    
+    Range("A3").Select
+    Unload 手配データ分割画面
+
+End Sub

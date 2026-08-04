@@ -1,0 +1,83 @@
+Attribute VB_Name = "⑨出庫確認"
+Attribute VB_Base = "0{00020820-0000-0000-C000-000000000046}"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = True
+Attribute VB_TemplateDerived = False
+Attribute VB_Customizable = True
+Option Explicit
+
+'================================================================
+'=  コードがダブルクリックされた時
+'================================================================
+Private Sub Worksheet_BeforeDoubleClick(ByVal Target As Range, Cancel As Boolean)
+
+    w行 = Target.Row
+    w列 = Target.Column
+    
+    Call 画面停止有効
+    'Call シート保護解除
+    Call コード退避
+    If (エラー = "Y") Then
+        Exit Sub
+    Else
+        If (w行 > 2 And w列 = 2) Then
+            '*----------*
+            Call DB_OPEN
+            Call テーブルを開く("T_出庫データ where コード = '" & wコード & "'", "コード")
+            Call 出庫確認情報退避
+            Call テーブルを閉じる
+            Call DB_CLOSE
+            '*----------*
+            Call 出庫変更画面を開く
+        End If
+    End If
+    'Call シート保護設定
+    Call 画面停止無効
+    
+    
+End Sub
+
+'================================================================
+'=  出庫確認情報退避
+'================================================================
+Sub 出庫確認情報退避()
+
+    If (r.EOF) Then
+        Exit Sub
+    End If
+    
+    With r
+        w品名 = ![品名]
+        w数量 = ![出庫数]
+        w管理NO = ![管理NO]
+        w備考 = ![備考]
+    End With
+            
+End Sub
+
+'================================================================
+'=  出庫変更画面を開く
+'================================================================
+Sub 出庫変更画面を開く()
+
+    Range("A3").Select
+    出庫変更画面.Show
+
+End Sub
+
+'================================================================
+'=  コード退避
+'================================================================
+Sub コード退避()
+
+    エラー = "N"
+
+    If (Trim(Range("B" & w行)) = "") Then
+        エラー = "Y"
+    Else
+        wコード = 大文字変換(半角変換(Trim(Range("B" & w行))))
+    End If
+    
+End Sub
