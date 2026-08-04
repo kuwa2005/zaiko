@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function login(page) {
-  await page.goto('/index.php?p=login');
+  await page.goto('index.php?p=login');
   await expect(page.locator('h1')).toHaveText('担当者選択');
   await page.selectOption('select[name="担当者"]', { label: '担当A' });
   await page.getByRole('button', { name: 'ログイン' }).click();
@@ -147,7 +147,7 @@ test('発注先・出庫先マスタの登録と選択式への連動', async ({
 });
 
 test('未ログインならログイン画面へリダイレクトされる', async ({ page }) => {
-  await page.goto('/index.php?p=dashboard');
+  await page.goto('index.php?p=dashboard');
   await page.waitForURL(/p=login/);
   await expect(page.locator('h1')).toHaveText('担当者選択');
 });

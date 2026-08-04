@@ -100,3 +100,9 @@ function h(mixed $s): string
 {
     return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 }
+
+/** 使用中DBの表示名（MySQL / SQLite） */
+function db_label(): string
+{
+    return DB_DRIVER === 'mysql' ? 'MySQL' : 'SQLite';
+}

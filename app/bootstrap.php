@@ -33,6 +33,11 @@ ini_set('display_errors', APP_DEBUG ? '1' : '0');
 // ---- DB初期化（初回起動時にスキーマ作成・初期データ投入） ----
 function db_init(): void
 {
+    if (DB_DRIVER === 'mysql') {
+        db_init_mysql();
+        return;
+    }
+
     $dir = dirname(DB_PATH);
     if (!is_dir($dir)) {
         mkdir($dir, 0775, true);
@@ -129,10 +134,47 @@ function db_init(): void
     }
 }
 
-db_init();
+/** MySQL 向けDB初期化（スキーマ未作成なら作成 + 初期データ投入） */
+function db_init_mysql(): void
+{
+    $pdo = db();
+
+    // スキーマ未作成（採番テーブルが無い）なら schema_mysql.sql を適用
+    $has = (int)$pdo->query(
+        "SELECT COUNT(*) FROM information_schema.tables
+         WHERE table_schema = DATABASE() AND table_name = '採番'"
+    )->fetchColumn();
+    if ($has === 0) {
+        $sql = file_get_contents(SCHEMA_MYSQL_PATH);
+        if ($sql === false) {
+            throw new RuntimeException('スキーマファイルが見つかりません: ' . SCHEMA_MYSQL_PATH);
+        }
+        $pdo->exec($sql);
+    }
+
+    // 採番の初期化
+    $count = (int)$pdo->query("SELECT COUNT(*) FROM 採番")->fetchColumn();
+    if ($count === 0) {
+        $stmt = $pdo->prepare("INSERT INTO 採番 (種別, 連番) VALUES (?, 0)");
+        $stmt->execute(['手配']);
+        $stmt->execute(['出庫']);
+    }
+
+    // 担当者の初期データ（例: 担当A〜担当E）
+    $count = (int)$pdo->query("SELECT COUNT(*) FROM 担当者")->fetchColumn();
+    if ($count === 0) {
+        $stmt = $pdo->prepare("INSERT INTO 担当者 (名前) VALUES (?)");
+        foreach (['担当A', '担当B', '担当C', '担当D', '担当E'] as $name) {
+            $stmt->execute([$name]);
+        }
+    }
+}
 
 // ---- 共通ライブラリ読み込み ----
 require_once __DIR__ . '/lib/db.php';
+
+db_init();
+
 require_once __DIR__ . '/lib/util.php';
 require_once __DIR__ . '/lib/auth.php';
 require_once __DIR__ . '/lib/business.php';

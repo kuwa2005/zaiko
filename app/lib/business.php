@@ -17,16 +17,38 @@ function normalize_code(string $code): string
 }
 
 /** 管理NO採番（Hxxxx / Sxxxx。DB採番・排他制御 C13） */
-/** 管理NO採番（Hxxxx / Sxxxx。単一UPSERTで原子性を確保 C13） */
 function next_番号(string $種別): string
 {
-    $stmt = db()->prepare(
-        "INSERT INTO 採番 (種別, 連番) VALUES (?, 1)
-         ON CONFLICT(種別) DO UPDATE SET 連番 = 連番 + 1
-         RETURNING 連番"
-    );
-    $stmt->execute([$種別]);
-    $n = (int)$stmt->fetchColumn();
+    $pdo = db();
+    if (DB_DRIVER === 'mysql') {
+        // MariaDB: LAST_INSERT_ID(expr) で採番を原子的に確定
+        db_exec(
+            "INSERT INTO 採番 (種別, 連番) VALUES (?, LAST_INSERT_ID(1))
+             ON DUPLICATE KEY UPDATE 連番 = LAST_INSERT_ID(連番 + 1)",
+            [$種別]
+        );
+        $n = (int)db_val("SELECT LAST_INSERT_ID()");
+    } else {
+        // SQLite: RETURNING 非対応の古いバージョンでも動くよう、単一トランザクションで
+        // INSERT OR IGNORE → UPDATE → SELECT を実行（呼出側がトランザクション内ならそれに乗る）
+        $inTx = $pdo->inTransaction();
+        if (!$inTx) {
+            $pdo->beginTransaction();
+        }
+        try {
+            db_exec("INSERT OR IGNORE INTO 採番 (種別, 連番) VALUES (?, 0)", [$種別]);
+            db_exec("UPDATE 採番 SET 連番 = 連番 + 1 WHERE 種別 = ?", [$種別]);
+            $n = (int)db_val("SELECT 連番 FROM 採番 WHERE 種別 = ?", [$種別]);
+            if (!$inTx) {
+                $pdo->commit();
+            }
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction() && !$inTx) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+    }
     $prefix = $種別 === '出庫' ? 'S' : 'H';
     return $prefix . sprintf('%010d', $n);
 }
