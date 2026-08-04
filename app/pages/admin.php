@@ -106,6 +106,7 @@ function download_backup(array $tables, string $label): void
     }
 
     foreach ($tables as $t) {
+        if ($t === '採番') continue;
         $body .= "-- $t\n";
         $body .= "DELETE FROM `$t`;\n";
         foreach (build_insert_lines($t) as $line) {
@@ -154,12 +155,17 @@ function restore_from_upload(array $tables, string $label): void
             $pdo->exec("DELETE FROM `$t`");
         }
 
-        // INSERT 文のみ抽出・実行
+        // SQL ステートメントを順序通り実行（DELETE + INSERT を正しく処理）
         foreach (preg_split('/;\s*\n/s', $sql) as $chunk) {
-            $s = trim($chunk);
-            if ($s === '' || str_starts_with($s, '--') || str_starts_with($s, 'SET ')) continue;
-            if (!preg_match('/^INSERT\s+INTO\s+`?(\w+)`?/iu', $s, $m)) continue;
-            if (!in_array($m[1], $tables, true)) continue;
+            $s = trim(preg_replace('/^--.*\n?/m', '', $chunk));
+            if ($s === '' || str_starts_with($s, 'SET ')) continue;
+            if (preg_match('/^DELETE\s+FROM\s+`?(\w+)`?/iu', $s, $m)) {
+                if (!in_array($m[1], $tables, true)) continue;
+            } elseif (preg_match('/^INSERT\s+INTO\s+`?(\w+)`?/iu', $s, $m)) {
+                if (!in_array($m[1], $tables, true)) continue;
+            } else {
+                continue;
+            }
             $pdo->exec($s);
         }
 
