@@ -4,9 +4,6 @@ db/zaiko.db-wal
 db/zaiko.db-shm
 db/backup/
 
-# 解析ドキュメント（公開しない）
-docs/
-
 # 依存・テスト生成物
 node_modules/
 test-results/
